@@ -1,0 +1,15 @@
+services:
+  forza-hud:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: forza-web-hud
+    restart: unless-stopped
+    ports:
+      # TCP Port for the Web Dashboard interface & WebSocket stream
+      - "8080:8080"
+      # UDP Port for receiving telemetry data broadcasted by Forza Horizon
+      - "5607:5607/udp"
+    environment:
+      - UDP_PORT=5607
+      - WS_PORT=8080

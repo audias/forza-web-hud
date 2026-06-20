@@ -1,0 +1,15 @@
+{
+  "name": "forza-web-hud-backend",
+  "version": "1.0.0",
+  "description": "Backend UDP telemetry parser and WebSocket server for Forza Web HUD",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=.env --watch server.js",
+    "start": "node --env-file=.env server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "ws": "^8.17.1"
+  }
+}
