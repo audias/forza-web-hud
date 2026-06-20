@@ -140,33 +140,45 @@ export function parseForzaPacket(buf) {
 
   // If the packet has the Dash fields (typically size >= 311)
   if (buf.length >= 311) {
-    baseTelemetry.positionX = buf.readFloatLE(232);
-    baseTelemetry.positionY = buf.readFloatLE(236);
-    baseTelemetry.positionZ = buf.readFloatLE(240);
-    baseTelemetry.speed = buf.readFloatLE(244);
-    baseTelemetry.power = buf.readFloatLE(248);
-    baseTelemetry.torque = buf.readFloatLE(252);
-    baseTelemetry.tireTempFl = buf.readFloatLE(256);
-    baseTelemetry.tireTempFr = buf.readFloatLE(260);
-    baseTelemetry.tireTempRl = buf.readFloatLE(264);
-    baseTelemetry.tireTempRr = buf.readFloatLE(268);
-    baseTelemetry.boost = buf.readFloatLE(272);
-    baseTelemetry.fuel = buf.readFloatLE(276);
-    baseTelemetry.distanceTraveled = buf.readFloatLE(280);
-    baseTelemetry.bestLap = buf.readFloatLE(284);
-    baseTelemetry.lastLap = buf.readFloatLE(288);
-    baseTelemetry.currentLap = buf.readFloatLE(292);
-    baseTelemetry.currentRaceTime = buf.readFloatLE(296);
-    baseTelemetry.lapNumber = buf.readUInt16LE(300);
-    baseTelemetry.racePosition = buf.readUInt8(302);
-    baseTelemetry.accel = buf.readUInt8(303);
-    baseTelemetry.brake = buf.readUInt8(304);
-    baseTelemetry.clutch = buf.readUInt8(305);
-    baseTelemetry.handbrake = buf.readUInt8(306);
-    baseTelemetry.gear = buf.readUInt8(307);
-    baseTelemetry.steer = buf.readInt8(308);
-    baseTelemetry.normalizedDrivingLine = buf.readInt8(309);
-    baseTelemetry.normalizedAiBrake = buf.readInt8(310);
+    // FH4/FH5 (323 bytes) and FH6 (324 bytes) insert 12 bytes of Horizon-specific data
+    // (CarGroup, SmashableVelDiff, SmashableMass) after NumCylinders (offset 228) and before PositionX.
+    // This shifts all subsequent Dash properties by 12 bytes.
+    const isHorizon = buf.length >= 323;
+    const shift = isHorizon ? 12 : 0;
+
+    if (isHorizon) {
+      baseTelemetry.carGroup = buf.readUInt32LE(232);
+      baseTelemetry.smashableVelDiff = buf.readFloatLE(236);
+      baseTelemetry.smashableMass = buf.readFloatLE(240);
+    }
+
+    baseTelemetry.positionX = buf.readFloatLE(232 + shift);
+    baseTelemetry.positionY = buf.readFloatLE(236 + shift);
+    baseTelemetry.positionZ = buf.readFloatLE(240 + shift);
+    baseTelemetry.speed = buf.readFloatLE(244 + shift);
+    baseTelemetry.power = buf.readFloatLE(248 + shift);
+    baseTelemetry.torque = buf.readFloatLE(252 + shift);
+    baseTelemetry.tireTempFl = buf.readFloatLE(256 + shift);
+    baseTelemetry.tireTempFr = buf.readFloatLE(260 + shift);
+    baseTelemetry.tireTempRl = buf.readFloatLE(264 + shift);
+    baseTelemetry.tireTempRr = buf.readFloatLE(268 + shift);
+    baseTelemetry.boost = buf.readFloatLE(272 + shift);
+    baseTelemetry.fuel = buf.readFloatLE(276 + shift);
+    baseTelemetry.distanceTraveled = buf.readFloatLE(280 + shift);
+    baseTelemetry.bestLap = buf.readFloatLE(284 + shift);
+    baseTelemetry.lastLap = buf.readFloatLE(288 + shift);
+    baseTelemetry.currentLap = buf.readFloatLE(292 + shift);
+    baseTelemetry.currentRaceTime = buf.readFloatLE(296 + shift);
+    baseTelemetry.lapNumber = buf.readUInt16LE(300 + shift);
+    baseTelemetry.racePosition = buf.readUInt8(302 + shift);
+    baseTelemetry.accel = buf.readUInt8(303 + shift);
+    baseTelemetry.brake = buf.readUInt8(304 + shift);
+    baseTelemetry.clutch = buf.readUInt8(305 + shift);
+    baseTelemetry.handbrake = buf.readUInt8(306 + shift);
+    baseTelemetry.gear = buf.readUInt8(307 + shift);
+    baseTelemetry.steer = buf.readInt8(308 + shift);
+    baseTelemetry.normalizedDrivingLine = buf.readInt8(309 + shift);
+    baseTelemetry.normalizedAiBrake = buf.readInt8(310 + shift);
   }
 
   return baseTelemetry;

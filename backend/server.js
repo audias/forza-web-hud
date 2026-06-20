@@ -183,6 +183,10 @@ let simData = {
   drivetrainType: 2, // AWD
   numCylinders: 6,
   
+  carGroup: 0,
+  smashableVelDiff: 0,
+  smashableMass: 0,
+  
   positionX: 0,
   positionY: 0,
   positionZ: 0,
